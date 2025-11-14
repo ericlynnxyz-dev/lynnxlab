@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Myanmar Gold Calculator — Gold Weight / ရွှေ အလေးချိန်</title>
+
+  <!-- Burmese font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="gold-weight-title">
+    <!-- Price & Purity (above title) -->
+    <div class="top-row">
+      <div class="top-left">
+        <div class="control">
+          <label class="small" for="kyatPrice">Gold Price per Kyat (16K base)<br><span>ရွှေစျေး (ကျယ်အပေါ် 16K)</span></label>
+          <input id="kyatPrice" type="number" step="0.01" min="0" placeholder="Enter 16K price per Kyat — ကျယ်စျေး" data-enabled="true" />
+        </div>
+
+        <div class="control" style="min-width:160px;">
+          <label class="small" for="purity">Purity / ရည်မွှာမ</label>
+          <select id="purity" aria-label="Purity selection">
+            <option value="16K">16K</option>
+            <option value="15K">15K</option>
+            <option value="14.5K">14.5K</option>
+            <option value="14K">14K</option>
+            <option value="12K">12K</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="top-right" aria-hidden="true">
+        <div style="text-align:right; color:var(--muted); font-size:0.92rem;">
+          <div>Conversion: 1 Kyat = 16 Pae = 128 Yway</div>
+          <div>1 Kyat ≈ 16.329 g</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crafting fee (above Gold Weight title) -->
+    <div class="group-row" style="margin-bottom:0.4rem;">
+      <div class="group-left">
+        <div style="display:flex; flex-direction:column;">
+          <label class="label-primary" for="craftingFee">Crafting Fee / အလုပ်စွဲငွေ</label>
+          <div style="font-size:0.92rem; color:var(--muted);">Whole number in Myanmar Kyats (Ks) — ကျပ် (၁၅၀၀ ...)</div>
+        </div>
+      </div>
+      <div class="group-right">
+        <div style="min-width:220px;">
+          <input id="craftingFee" type="number" step="1" min="0" placeholder="Crafting fee (Ks) — အလုပ်စွဲငွေ" data-enabled="true" />
+        </div>
+      </div>
+    </div>
+
+    <h1 id="gold-weight-title" class="title">Gold Weight</h1>
+    <div class="subtitle">ရွှေ အလေးချိန် — Bilingual input controls</div>
+    <div class="motif" aria-hidden="true"></div>
+
+    <form id="calcForm" onsubmit="return false;">
+      <!-- Combined Kyat / Pae / Yway line with one checkbox (Gold weight) -->
+      <div class="group-row" id="kpyGroupRow">
+        <div class="group-left">
+          <input id="chkKPY" class="checkbox" type="checkbox" checked aria-label="Include Kyat Pae Yway inputs (Gold)">
+          <div>
+            <label class="label-primary" for="chkKPY">Kyat / Pae / Yway (Gold)</label>
+            <div style="font-size:0.92rem; color:var(--muted);">ကျယ် / ပဲ / ရွေး — check to include (gold)</div>
+          </div>
+        </div>
+
+        <div class="group-right" id="kpyInputs">
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Kyat / ကျယ်</label>
+            <input id="kyat" type="number" step="0.01" min="0" placeholder="Kyat — ကျယ်" data-enabled="true" />
+          </div>
+
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Pae / ပဲ</label>
+            <input id="pae" type="number" step="0.01" min="0" placeholder="Pae — ပဲ" data-enabled="true" />
+          </div>
+
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Yway / ရွေး</label>
+            <input id="yway" type="number" step="1" min="0" placeholder="Yway — ရွေး" data-enabled="true" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Grams row (separate checkbox) -->
+      <div class="group-row" id="gramsRow">
+        <div class="group-left">
+          <input id="chkGrams" class="checkbox" type="checkbox" checked aria-label="Include grams input (Gold)">
+          <div>
+            <label class="label-primary" for="grams">Grams / ဂရမ် (Gold)</label>
+            <div style="font-size:0.92rem; color:var(--muted)">1 Kyat ≈ 16.329 g</div>
+          </div>
+        </div>
+
+        <div class="group-right">
+          <div class="unit-input" style="min-width:220px;">
+            <input id="grams" type="number" step="0.01" min="0" placeholder="Grams — ဂရမ်" data-enabled="true" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Waste Weight Title and inputs (before Calculate button) -->
+      <h2 class="section-title">Waste Weight</h2>
+      <div class="section-sub">ပျက်စီး အလေးချိန် — Kyat / Pae / Yway only (not grams)</div>
+
+      <div class="group-row" id="wasteGroupRow">
+        <div class="group-left">
+          <input id="chkWaste" class="checkbox" type="checkbox" checked aria-label="Include waste weight">
+          <div>
+            <label class="label-primary" for="chkWaste">Waste (Kyat / Pae / Yway)</label>
+            <div style="font-size:0.92rem; color:var(--muted)">ပျက်စီး — တွက်ချက်ရန် ရွေးပါ</div>
+          </div>
+        </div>
+
+        <div class="group-right" id="wasteInputs">
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Kyat / ကျယ်</label>
+            <input id="wasteKyat" type="number" step="0.01" min="0" placeholder="Kyat — ကျယ်" data-enabled="true" />
+          </div>
+
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Pae / ပဲ</label>
+            <input id="wastePae" type="number" step="0.01" min="0" placeholder="Pae — ပဲ" data-enabled="true" />
+          </div>
+
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Yway / ရွေး</label>
+            <input id="wasteYway" type="number" step="1" min="0" placeholder="Yway — ရွေး" data-enabled="true" />
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:0.4rem;">
+        <button id="calculateBtn" class="calc" type="button">Calculate / တွက်ချက်ပါ</button>
+      </div>
+    </form>
+
+    <section id="results" class="results" style="display:none;" aria-live="polite">
+      <div id="resultMain"></div>
+      <div id="breakdown" class="breakdown"></div>
+    </section>
+  </main>
+
+  <!-- App script -->
+  <script src="app.js" defer></script>
+</body>
+</html>

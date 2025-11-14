@@ -1,0 +1,209 @@
+/* style.css
+   Styles for Myanmar Gold Calculator
+*/
+
+:root{
+  --gold-1: #c9912f;
+  --gold-2: #b8841f;
+  --muted: #8a6825;
+  --panel: #ffffff; /* white background */
+  --accent-border: rgba(194,154,59,0.08);
+  --input-enabled: #ffffff;
+  --input-disabled: #efefef;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Noto Sans Myanmar', Arial, sans-serif;
+  background: var(--panel);
+  color: #6b4b11;
+  margin: 0;
+  padding: 1.2rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  max-width: 920px;
+  margin: 1.2rem auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.4rem;
+  box-shadow: 0 6px 28px rgba(162,124,36,0.06);
+  border: 1px solid var(--accent-border);
+}
+
+.top-row {
+  display: flex;
+  gap: 0.8rem;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.top-left,
+.top-right {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+label.small {
+  font-weight: 600;
+  color: var(--gold-2);
+}
+
+label.small span {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+input[type="number"],
+select {
+  padding: 0.48rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #e2c77a;
+  font-size: 1rem;
+  color: #5b3f12;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Input background: white when enabled, grey when disabled */
+input[data-enabled="true"] { background: var(--input-enabled); }
+input[data-enabled="false"] { background: var(--input-disabled); }
+
+.title {
+  text-align: center;
+  color: var(--gold-1);
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin: 0.6rem 0 0.2rem 0;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-bottom: 0.8rem;
+}
+
+.motif {
+  height: 40px;
+  background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Burmese_art_border.svg/320px-Burmese_art_border.svg.png') repeat-x;
+  background-size: contain;
+  opacity: 0.12;
+  margin: 0.6rem 0;
+}
+
+.group-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  background: linear-gradient(90deg,#fffdf2,#fffaf0);
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(230,198,121,0.6);
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.group-left {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  min-width: 220px;
+}
+
+.group-right {
+  flex: 1;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.unit-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 88px;
+}
+
+.unit-input input[type="number"] { width: 110px; }
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+}
+
+.section-title {
+  margin: 0.4rem 0 0.2rem 0;
+  color: var(--gold-2);
+  font-size: 1.05rem;
+}
+
+.section-sub {
+  margin-bottom: 0.6rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.calc {
+  width: 100%;
+  padding: 0.78rem;
+  margin-top: 0.4rem;
+  background: var(--gold-1);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 6px 18px rgba(201,145,47,0.12);
+}
+
+.calc:hover { background: #a36f15; }
+
+.results {
+  margin-top: 1rem;
+  background: #fff8e6;
+  border-radius: 8px;
+  padding: 0.9rem;
+  border: 1px solid #e7cf92;
+  color: #6e4d11;
+}
+
+.label-primary { font-weight: 700; color: #9b6f14; }
+
+.breakdown { margin-top: 0.7rem; color: #a97b26; font-size: 0.95rem; }
+
+@media (max-width:900px) {
+  .group-right { justify-content: flex-start; }
+  .unit-input input[type="number"] { width: 100%; min-width: 0; }
+  .group-row { flex-direction: column; align-items: stretch; }
+  .group-left { min-width: unset; }
+}
+
+.note { font-size: 0.88rem; color: #8d6b20; margin-top: 0.35rem; }
+.disabled { opacity: 0.6; }
