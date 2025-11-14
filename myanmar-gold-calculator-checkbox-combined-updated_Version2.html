@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Gold Calculator | Gold Weight - မြန်မာ ရတနာ အလေးချိန်</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --gold-1:#c9912f;
+      --gold-2:#b8841f;
+      --muted:#8a6825;
+      --panel:#ffffff; /* changed to white background */
+      --accent-border: rgba(194,154,59,0.08);
+      --input-enabled: #ffffff;
+      --input-disabled: #efefef;
+    }
+
+    html,body {
+      height:100%;
+    }
+
+    body {
+      font-family: 'Noto Sans Myanmar', Arial, sans-serif;
+      background: var(--panel); /* white */
+      color: #6b4b11;
+      margin: 0;
+      padding: 1.2rem;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .card {
+      max-width: 920px;
+      margin: 1.2rem auto;
+      background: #fff; /* white panel */
+      border-radius: 12px;
+      padding: 1.4rem;
+      box-shadow: 0 6px 28px rgba(162,124,36,0.06);
+      border: 1px solid var(--accent-border);
+    }
+
+    .top-row {
+      display:flex;
+      gap:0.8rem;
+      align-items:end;
+      justify-content:space-between;
+      margin-bottom: 0.6rem;
+      flex-wrap:wrap;
+    }
+    .top-left, .top-right {
+      display:flex;
+      gap:0.8rem;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .control {
+      display:flex;
+      flex-direction:column;
+      gap:0.25rem;
+    }
+    label.small {
+      font-weight:600;
+      color:var(--gold-2);
+    }
+    label.small span {
+      font-weight:400;
+      color:var(--muted);
+      font-size:0.92rem;
+    }
+
+    input[type="number"], select {
+      padding:0.48rem 0.6rem;
+      border-radius:6px;
+      border:1px solid #e2c77a;
+      font-size:1rem;
+      color:#5b3f12;
+      outline:none;
+      box-sizing:border-box;
+    }
+
+    /* Input background: white when enabled, grey when disabled */
+    input[data-enabled="true"] { background: var(--input-enabled); }
+    input[data-enabled="false"] { background: var(--input-disabled); }
+
+    .title {
+      text-align:center;
+      color: var(--gold-1);
+      font-weight:700;
+      font-size:1.25rem;
+      margin: 0.6rem 0 0.2rem 0;
+    }
+    .subtitle {
+      text-align:center;
+      color:var(--muted);
+      font-size:0.92rem;
+      margin-bottom:0.8rem;
+    }
+
+    .motif { height:40px; background:url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Burmese_art_border.svg/320px-Burmese_art_border.svg.png') repeat-x; background-size:contain; opacity:0.12; margin:0.6rem 0; }
+
+    .group-row {
+      display:flex;
+      gap:0.6rem;
+      align-items:center;
+      background:linear-gradient(90deg,#fffdf2,#fffaf0);
+      padding:0.6rem;
+      border-radius:8px;
+      border:1px solid rgba(230,198,121,0.6);
+      margin-bottom:0.8rem;
+      flex-wrap:wrap;
+    }
+
+    .group-left {
+      display:flex;
+      gap:0.6rem;
+      align-items:center;
+      min-width:220px;
+    }
+
+    .group-right {
+      flex:1;
+      display:flex;
+      gap:0.5rem;
+      align-items:center;
+      justify-content:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .unit-input {
+      display:flex;
+      flex-direction:column;
+      gap:0.2rem;
+      min-width:88px;
+    }
+    .unit-input input[type="number"] { width:110px; }
+
+    .checkbox {
+      width:18px;
+      height:18px;
+    }
+
+    .row {
+      display:flex;
+      gap:0.6rem;
+      align-items:center;
+      margin-bottom:0.8rem;
+      flex-wrap:wrap;
+    }
+
+    .calc {
+      width:100%;
+      padding:0.78rem;
+      margin-top:0.4rem;
+      background:var(--gold-1);
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:1rem;
+      box-shadow:0 6px 18px rgba(201,145,47,0.12);
+    }
+    .calc:hover { background:#a36f15; }
+
+    .results {
+      margin-top:1rem;
+      background:#fff8e6;
+      border-radius:8px;
+      padding:0.9rem;
+      border:1px solid #e7cf92;
+      color:#6e4d11;
+    }
+    .label-primary { font-weight:700; color:#9b6f14; }
+
+    .breakdown { margin-top:0.7rem; color:#a97b26; font-size:0.95rem; }
+
+    @media (max-width:900px) {
+      .group-right { justify-content:flex-start; }
+      .unit-input input[type="number"] { width:100%; min-width:0; }
+      .group-row { flex-direction:column; align-items:stretch; }
+      .group-left { min-width:unset; }
+    }
+
+    .note { font-size:0.88rem; color:#8d6b20; margin-top:0.35rem; }
+    .disabled { opacity:0.6; }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="gold-weight-title">
+
+    <!-- Price & Purity (above title) -->
+    <div class="top-row">
+      <div class="top-left">
+        <div class="control">
+          <label class="small" for="kyatPrice">Gold Price per Kyat (16K base)<br><span>ရွှေစျေး (ကျယ်အပေါ် 16K)</span></label>
+          <input id="kyatPrice" type="number" step="0.01" min="0" placeholder="Enter 16K price per Kyat — ကျယ်စျေး" data-enabled="true" />
+        </div>
+
+        <div class="control" style="min-width:160px;">
+          <label class="small" for="purity">Purity / ရည်မွှာမ</label>
+          <select id="purity" aria-label="Purity selection">
+            <option value="16K">16K</option>
+            <option value="15K">15K</option>
+            <option value="14.5K">14.5K</option>
+            <option value="14K">14K</option>
+            <option value="12K">12K</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="top-right" aria-hidden="true">
+        <div style="text-align:right; color:var(--muted); font-size:0.92rem;">
+          <div>Conversion: 1 Kyat = 16 Pae = 128 Yway</div>
+          <div>1 Kyat ≈ 16.329 g</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crafting fee (above Gold Weight title) -->
+    <div class="group-row" style="margin-bottom:0.4rem;">
+      <div class="group-left">
+        <div style="display:flex; flex-direction:column;">
+          <label class="label-primary" for="craftingFee">Crafting Fee / လက်ခ</label>
+          <div style="font-size:0.92rem; color:var(--muted);">Whole number in Myanmar Kyats (Ks) — ကျပ် (၁၅၀၀ ...)</div>
+        </div>
+      </div>
+      <div class="group-right">
+        <div style="min-width:220px;">
+          <input id="craftingFee" type="number" step="1" min="0" placeholder="Crafting fee (Ks) — အလုပ်စွဲငွေ" data-enabled="true" />
+        </div>
+      </div>
+    </div>
+
+    <h1 id="gold-weight-title" class="title">Gold Weight</h1>
+    <div class="subtitle">ရွှေ အလေးချိန် — Bilingual input controls</div>
+    <div class="motif" aria-hidden="true"></div>
+
+    <form id="calcForm" onsubmit="return false;">
+
+      <!-- Combined Kyat / Pae / Yway line with one checkbox (Gold weight) -->
+      <div class="group-row" id="kpyGroupRow">
+        <div class="group-left">
+          <input id="chkKPY" class="checkbox" type="checkbox" checked aria-label="Include Kyat Pae Yway inputs (Gold)">
+          <div>
+            <label class="label-primary" for="chkKPY">Kyat / Pae / Yway (Gold)</label>
+            <div style="font-size:0.92rem; color:var(--muted);">ကျပ် / ပဲ / ရွေး — check to include (gold)</div>
+          </div>
+        </div>
+
+        <div class="group-right" id="kpyInputs">
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Kyat / ကျပ်</label>
+            <input id="kyat" type="number" step="0.01" min="0" placeholder="Kyat — ကျယ်" data-enabled="true" />
+          </div>
+
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Pae / ပဲ</label>
+            <input id="pae" type="number" step="0.01" min="0" placeholder="Pae — ပဲ" data-enabled="true" />
+          </div>
+
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Yway / ရွေး</label>
+            <input id="yway" type="number" step="1" min="0" placeholder="Yway — ရွေး" data-enabled="true" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Grams row (separate checkbox) -->
+      <div class="group-row" id="gramsRow">
+        <div class="group-left">
+          <input id="chkGrams" class="checkbox" type="checkbox" checked aria-label="Include grams input (Gold)">
+          <div>
+            <label class="label-primary" for="grams">Grams / ဂရမ် (Gold)</label>
+            <div style="font-size:0.92rem; color:var(--muted)">1 Kyat ≈ 16.329 g</div>
+          </div>
+        </div>
+
+        <div class="group-right">
+          <div class="unit-input" style="min-width:220px;">
+            <input id="grams" type="number" step="0.01" min="0" placeholder="Grams — ဂရမ်" data-enabled="true" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Waste Weight Title and inputs (before Calculate button) -->
+      <h2 style="margin:0.4rem 0 0.2rem 0; color:var(--gold-2); font-size:1.05rem;">Waste Weight</h2>
+      <div style="margin-bottom:0.35rem; color:var(--muted);">ပျက်စီး အလေးချိန် — Kyat / Pae / Yway only (not grams)</div>
+
+      <div class="group-row" id="wasteGroupRow">
+        <div class="group-left">
+          <input id="chkWaste" class="checkbox" type="checkbox" checked aria-label="Include waste weight">
+          <div>
+            <label class="label-primary" for="chkWaste">Waste (Kyat / Pae / Yway)</label>
+            <div style="font-size:0.92rem; color:var(--muted)">ပျက်စီး — တွက်ချက်ရန် ရွေးပါ</div>
+          </div>
+        </div>
+
+        <div class="group-right" id="wasteInputs">
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Kyat / ကျပ်</label>
+            <input id="wasteKyat" type="number" step="0.01" min="0" placeholder="Kyat — ကျယ်" data-enabled="true" />
+          </div>
+
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Pae / ပဲ</label>
+            <input id="wastePae" type="number" step="0.01" min="0" placeholder="Pae — ပဲ" data-enabled="true" />
+          </div>
+
+          <div class="unit-input">
+            <label style="font-size:0.85rem; color:var(--muted)">Yway / ရွေး</label>
+            <input id="wasteYway" type="number" step="1" min="0" placeholder="Yway — ရွေး" data-enabled="true" />
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:0.4rem;">
+        <button id="calculateBtn" class="calc" type="button">Calculate / တွက်ချက်ပါ</button>
+      </div>
+    </form>
+
+    <section id="results" class="results" style="display:none;" aria-live="polite">
+      <div id="resultMain"></div>
+      <div id="breakdown" class="breakdown"></div>
+    </section>
+  </main>
+
+  <script>
+    // Conversion constants
+    const KYAT_TO_PAE = 16;
+    const PAE_TO_YWAY = 8;
+    const KYAT_TO_YWAY = 128;
+    const KYAT_TO_GRAM = 16.329; // as requested
+
+    // Elements: gold weight
+    const chkKPY = document.getElementById('chkKPY');
+    const chkGrams = document.getElementById('chkGrams');
+
+    const kyatInput = document.getElementById('kyat');
+    const paeInput = document.getElementById('pae');
+    const ywayInput = document.getElementById('yway');
+    const gramsInput = document.getElementById('grams');
+
+    // Waste weight
+    const chkWaste = document.getElementById('chkWaste');
+    const wasteKyatInput = document.getElementById('wasteKyat');
+    const wastePaeInput = document.getElementById('wastePae');
+    const wasteYwayInput = document.getElementById('wasteYway');
+
+    // Price/purity/crafting fee
+    const kyatPriceInput = document.getElementById('kyatPrice');
+    const puritySelect = document.getElementById('purity');
+    const craftingFeeInput = document.getElementById('craftingFee');
+
+    const calculateBtn = document.getElementById('calculateBtn');
+    const resultsSection = document.getElementById('results');
+    const resultMain = document.getElementById('resultMain');
+    const breakdownEl = document.getElementById('breakdown');
+
+    // Helper: set input enabled/disabled state and data-enabled attr for styling
+    function setInputState(inputEl, enabled) {
+      inputEl.disabled = !enabled;
+      inputEl.setAttribute('data-enabled', enabled ? 'true' : 'false');
+      const row = inputEl.closest('.group-row');
+      if (row) {
+        if (!enabled) row.classList.add('disabled');
+        else row.classList.remove('disabled');
+      }
+    }
+
+    // Toggle group: KPY (gold)
+    function toggleKPYGroup() {
+      const enabled = chkKPY.checked;
+      setInputState(kyatInput, enabled);
+      setInputState(paeInput, enabled);
+      setInputState(ywayInput, enabled);
+    }
+
+    // Toggle grams
+    function toggleGrams() {
+      const enabled = chkGrams.checked;
+      setInputState(gramsInput, enabled);
+    }
+
+    // Toggle waste group
+    function toggleWasteGroup() {
+      const enabled = chkWaste.checked;
+      setInputState(wasteKyatInput, enabled);
+      setInputState(wastePaeInput, enabled);
+      setInputState(wasteYwayInput, enabled);
+    }
+
+    // Initialize states
+    toggleKPYGroup();
+    toggleGrams();
+    toggleWasteGroup();
+
+    // Attach listeners
+    chkKPY.addEventListener('change', toggleKPYGroup);
+    chkGrams.addEventListener('change', toggleGrams);
+    chkWaste.addEventListener('change', toggleWasteGroup);
+
+    function calculateGold() {
+      // Require at least one section included (gold KPY/grams or waste)
+      if (!chkKPY.checked && !chkGrams.checked && !chkWaste.checked) {
+        resultsSection.style.display = 'block';
+        resultMain.innerHTML = '<strong>Please check at least one input group to include in the calculation. (ကျယ်/ပဲ/ရွေး/ဂရမ်/ပျက်စီး ထဲမှ အနည်းဆုံး တစ်ခုကို ရွေးပါ)</strong>';
+        breakdownEl.innerHTML = '';
+        return;
+      }
+
+      // Gold KPY values (only if checked)
+      const kyatVal = chkKPY.checked ? (parseFloat(kyatInput.value) || 0) : 0;
+      const paeVal = chkKPY.checked ? (parseFloat(paeInput.value) || 0) : 0;
+      const ywayVal = chkKPY.checked ? (parseFloat(ywayInput.value) || 0) : 0;
+      const gramsVal = chkGrams.checked ? (parseFloat(gramsInput.value) || 0) : 0;
+
+      // Waste KPY values
+      const wasteKyatVal = chkWaste.checked ? (parseFloat(wasteKyatInput.value) || 0) : 0;
+      const wastePaeVal = chkWaste.checked ? (parseFloat(wastePaeInput.value) || 0) : 0;
+      const wasteYwayVal = chkWaste.checked ? (parseFloat(wasteYwayInput.value) || 0) : 0;
+
+      // Convert Gold K/P/Y to Kyat
+      let goldKyatTotal = 0;
+      if (chkKPY.checked) {
+        goldKyatTotal += kyatVal;
+        goldKyatTotal += (paeVal / KYAT_TO_PAE);
+        goldKyatTotal += (ywayVal / KYAT_TO_YWAY);
+      }
+      if (chkGrams.checked) {
+        goldKyatTotal += (gramsVal / KYAT_TO_GRAM);
+      }
+      goldKyatTotal = parseFloat(goldKyatTotal.toFixed(8));
+
+      // Convert Waste K/P/Y to Kyat
+      let wasteKyatTotal = 0;
+      if (chkWaste.checked) {
+        wasteKyatTotal += wasteKyatVal;
+        wasteKyatTotal += (wastePaeVal / KYAT_TO_PAE);
+        wasteKyatTotal += (wasteYwayVal / KYAT_TO_YWAY);
+      }
+      wasteKyatTotal = parseFloat(wasteKyatTotal.toFixed(8));
+
+      // Combined total Kyat (gold + waste)
+      const totalKyat = parseFloat((goldKyatTotal + wasteKyatTotal).toFixed(8));
+
+      // Representations
+      const totalYway = Math.round(totalKyat * KYAT_TO_YWAY);
+      const totalGram = totalKyat * KYAT_TO_GRAM;
+
+      // Pricing logic using entered 16K base price
+      const kyatPrice = parseFloat(kyatPriceInput.value) || 0;
+      const purity = puritySelect.value;
+      let pricePerKyat = kyatPrice;
+
+      switch (purity) {
+        case '15K':
+          pricePerKyat = (kyatPrice / 17) * 16;
+          break;
+        case '14.5K':
+          pricePerKyat = (128 * kyatPrice) / 140;
+          break;
+        case '14K':
+          pricePerKyat = (16 * kyatPrice) / 18;
+          break;
+        case '12K':
+          pricePerKyat = kyatPrice * 0.75;
+          break;
+        case '16K':
+        default:
+          pricePerKyat = kyatPrice;
+          break;
+      }
+
+      // Crafting fee (whole number Ks) added to total monetary value
+      const craftingFee = Math.max(0, Math.floor(parseFloat(craftingFeeInput.value) || 0));
+
+      const totalValueBeforeFee = totalKyat * pricePerKyat;
+      const totalValue = totalValueBeforeFee + craftingFee;
+
+      // Formatting
+      const formattedKyat = totalKyat.toFixed(2);
+      const formattedGram = totalGram.toFixed(2);
+      const formattedValue = totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const formattedPricePerKyat = pricePerKyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      // Render results
+      resultsSection.style.display = 'block';
+      resultMain.innerHTML = `
+        <div>
+          <strong>စုစုပေါင်း အလေးချိန် — Total Weight</strong><br />
+          • Kyat: <span style="color:#b07d12; font-weight:700">${formattedKyat}</span> / ကျယ် (2 decimals)<br />
+          • Yway: <span style="color:#b07d12; font-weight:700">${totalYway}</span> / ရွေး (whole number)<br />
+          • Grams: <span style="color:#b07d12; font-weight:700">${formattedGram}</span> g / ဂရမ် (2 decimals)<br /><br />
+          <strong>စုစုပေါင်း ရွှေတန်ဖိုး — Total Gold Value (Purity: ${purity})</strong><br />
+          • Price per Kyat (based on purity): <span style="color:#a05e07; font-weight:700">${formattedPricePerKyat}</span> Ks / ကျယ်<br />
+          • Total value before crafting fee: <span style="color:#a05e07; font-weight:700">${totalValueBeforeFee.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span> Ks<br />
+          • Crafting fee: <span style="color:#a05e07; font-weight:700">${craftingFee.toLocaleString()}</span> Ks<br />
+          • Grand total value (including crafting fee): <span style="color:#a05e07;font-size:1.05em;font-weight:800">${formattedValue}</span> Ks
+        </div>
+      `;
+
+      // Breakdown: show included inputs and waste separately
+      let breakdownHtml = '<strong>Inputs included in calculation / ထည့်သွင်းချက်များ</strong><br />';
+      breakdownHtml += '<em>Gold Weight</em><br />';
+      if (chkKPY.checked) {
+        breakdownHtml += `- Kyat: ${kyatVal} / ကျယ်<br />- Pae: ${paeVal} / ပဲ<br />- Yway: ${ywayVal} / ရွေး<br />`;
+      } else breakdownHtml += '- Kyat/Pae/Yway (gold) not included<br />';
+      if (chkGrams.checked) breakdownHtml += `- Grams: ${gramsVal} g / ဂရမ်<br />`; else breakdownHtml += '- Grams (gold) not included<br />';
+
+      breakdownHtml += `<br /><em>Waste Weight</em><br />`;
+      if (chkWaste.checked) {
+        breakdownHtml += `- Kyat: ${wasteKyatVal} / ကျယ်<br />- Pae: ${wastePaeVal} / ပဲ<br />- Yway: ${wasteYwayVal} / ရွေး<br />`;
+      } else {
+        breakdownHtml += '- Waste weight not included<br />';
+      }
+
+      breakdownHtml += `<br />Converted totals:<br />- Gold Kyat total: ${goldKyatTotal.toFixed(6)} Kyat<br />- Waste Kyat total: ${wasteKyatTotal.toFixed(6)} Kyat<br />- Combined Kyat used for pricing: ${totalKyat.toFixed(6)} Kyat<br />`;
+      breakdownHtml += `<br />Entered 16K price per Kyat: ${kyatPrice || 0} Ks / ကျယ်စျေး<br />Crafting fee added: ${craftingFee} Ks<br />Conversion used: 1 Kyat = ${KYAT_TO_PAE} Pae = ${KYAT_TO_YWAY} Yway; 1 Kyat ≈ ${KYAT_TO_GRAM} g`;
+
+      breakdownEl.innerHTML = breakdownHtml;
+    }
+
+    // Event listeners
+    calculateBtn.addEventListener('click', calculateGold);
+
+    // Enter triggers calculation
+    document.getElementById('calcForm').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        calculateGold();
+      }
+    });
+  </script>
+</body>
+</html>
